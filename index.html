@@ -289,24 +289,7 @@ table.tt tbody tr:hover td{background:var(--cream)}
 .da-btn:hover{border-color:var(--black);color:var(--black)}
 .da-btn.primary{background:var(--black);color:var(--white);border-color:var(--black)}
 
-/* AI */
-.ai-card{background:var(--black);border-radius:var(--rl);padding:20px 22px;margin-bottom:12px}
-.ai-title{font-family:var(--serif);font-size:18px;color:var(--white);margin-bottom:4px}
-.ai-sub{font-size:12px;color:#666;margin-bottom:16px}
-.ai-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.ai-in{flex:1;min-width:180px;font-size:13px;padding:9px 13px;border:1px solid #333;border-radius:var(--r);background:#1a1a1a;color:var(--white);font-family:var(--sans);transition:border-color .14s}
-.ai-in:focus{outline:none;border-color:#555}
-.ai-in::placeholder{color:#444}
-.ai-ta{width:100%;font-size:13px;padding:9px 13px;border:1px solid #333;border-radius:var(--r);background:#1a1a1a;color:var(--white);font-family:var(--sans);resize:vertical;min-height:65px;margin-bottom:10px;transition:border-color .14s}
-.ai-ta:focus{outline:none;border-color:#555}
-.ai-ta::placeholder{color:#444}
-.ai-btn{font-size:12px;padding:9px 20px;background:var(--white);color:var(--black);border:none;border-radius:var(--r);cursor:pointer;font-family:var(--sans);font-weight:500;transition:all .14s}
-.ai-btn:hover{background:var(--accent)}
-.ai-btn:disabled{opacity:.4;cursor:not-allowed}
-.ai-out{margin-top:14px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:var(--r);padding:14px 16px;font-size:13px;color:#bbb;line-height:1.75;white-space:pre-wrap;display:none}
-.ai-out.show{display:block}
-.ai-loading{color:#555;font-style:italic;animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* AI tools removed */
 
 /* NOTES */
 .notes-area{width:100%;min-height:120px;font-size:13px;padding:12px 14px;border:1px solid var(--stone);border-radius:var(--r);background:var(--white);color:var(--black);font-family:var(--sans);resize:vertical;line-height:1.7;transition:border-color .14s}
@@ -361,10 +344,6 @@ table.tt tbody tr:hover td{background:var(--cream)}
       Playbook
     </button>
     <div class="nav-section">Tools</div>
-    <button class="nav-btn" onclick="show('ai',this)">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2a6 6 0 100 12A6 6 0 008 2z"/><circle cx="8" cy="8" r="2"/></svg>
-      AI assistant
-    </button>
     <button class="nav-btn" onclick="show('notes',this)">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h10a1 1 0 011 1v9l-3 3H3a1 1 0 01-1-1V3a1 1 0 011-1z"/><line x1="5" y1="6" x2="11" y2="6"/><line x1="5" y1="9" x2="9" y2="9"/></svg>
       Notes
@@ -643,33 +622,6 @@ Looking forward to seeing how you style it.</div></div>
       </div>
     </div>
 
-    <!-- AI -->
-    <div class="panel" id="panel-ai">
-      <div class="sh"><h2>AI assistant</h2><p>Generate DMs, briefs, and hooks — powered by Claude.</p></div>
-      <div class="ai-card mb12">
-        <div class="ai-title">Personalised DM writer</div>
-        <div class="ai-sub">Enter creator details and get a ready-to-send, personalised outreach DM.</div>
-        <div class="ai-row"><input type="text" class="ai-in" id="ai-handle" placeholder="Creator handle e.g. @viraj.styles"><input type="number" class="ai-in" id="ai-followers" placeholder="Followers e.g. 4200" style="max-width:180px"></div>
-        <textarea class="ai-ta" id="ai-note" placeholder="Describe a specific post or reel you liked — e.g. 'posted a neutral-toned airport fit reel last week, very clean and minimal'"></textarea>
-        <button class="ai-btn" id="btn-dm" onclick="genDM()">Generate DM</button>
-        <div class="ai-out" id="out-dm"></div>
-      </div>
-      <div class="ai-card mb12">
-        <div class="ai-title">Content brief generator</div>
-        <div class="ai-sub">Input the creator's style and get a tailored brief to send them after they say yes.</div>
-        <div class="ai-row"><input type="text" class="ai-in" id="ai-style" placeholder="Creator's aesthetic e.g. 'clean streetwear, muted tones, city life'"><input type="text" class="ai-in" id="ai-product" placeholder="Product e.g. 'The Cloud Crew — white oversized tee'" style="max-width:280px"></div>
-        <button class="ai-btn" id="btn-brief" onclick="genBrief()">Generate brief</button>
-        <div class="ai-out" id="out-brief"></div>
-      </div>
-      <div class="ai-card">
-        <div class="ai-title">Reel hook + caption writer</div>
-        <div class="ai-sub">Describe a clip you received and get 3 scroll-stopping hooks and a caption.</div>
-        <textarea class="ai-ta" id="ai-clip" placeholder="Describe the clip — e.g. 'creator in white tee at a café, natural light, styled with beige pants, gave honest opinion on camera'"></textarea>
-        <button class="ai-btn" id="btn-hook" onclick="genHooks()">Generate hooks + caption</button>
-        <div class="ai-out" id="out-hook"></div>
-      </div>
-    </div>
-
     <!-- NOTES -->
     <div class="panel" id="panel-notes">
       <div class="sh"><h2>Notes</h2><p>Saved to Google Sheets automatically when you click save.</p></div>
@@ -706,27 +658,20 @@ Looking forward to seeing how you style it.</div></div>
         </div>
       </div>
 
-      <!-- AI SETUP -->
+      <!-- CLAUDE TIP -->
       <div class="card mb20">
-        <div class="card-title">Step 2 — Set up AI tools (requires hosting)</div>
-        <div style="background:var(--amber-light);border:1px solid #D4B870;border-radius:var(--r);padding:10px 14px;margin-bottom:16px">
-          <div style="font-size:11px;font-weight:500;color:var(--amber);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Why AI tools need hosting</div>
-          <div style="font-size:12px;color:var(--amber);line-height:1.6">When you open the dashboard as a local file, your browser blocks calls to external APIs (Anthropic) for security. Once you host it on GitHub Pages (free), all AI features work instantly.</div>
+        <div class="card-title">Step 2 — AI-powered DMs and content (free)</div>
+        <div style="background:var(--green-light);border:1px solid #9FD4A8;border-radius:var(--r);padding:12px 16px;margin-bottom:14px">
+          <div style="font-size:12px;color:var(--green);line-height:1.7">Use <strong>Claude.ai</strong> (free) for all AI generations — DM writing, content briefs, hook scripts, and captions. It knows TrueTee's tone and strategy. Just paste your request and copy the output back into your workflow.</div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
-          <div style="font-size:13px;font-weight:500">Your Anthropic API key</div>
-          <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Get your key from <a href="https://console.anthropic.com" style="color:var(--black)">console.anthropic.com</a> → API Keys → Create key. It starts with "sk-ant-". Stored only in your browser, never sent anywhere except Anthropic.</div>
-          <div style="display:flex;gap:8px">
-            <input type="password" class="ti" id="api-key-input" placeholder="sk-ant-api03-..." style="flex:1;font-size:13px;font-family:monospace">
-            <button class="t-add" onclick="saveApiKey()">Save key</button>
-          </div>
-          <div style="font-size:11px" id="api-key-status"></div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.8">
+          <strong style="color:var(--black);display:block;margin-bottom:6px">Ready-to-use prompts for Claude.ai:</strong>
+          <div style="background:var(--cream);border:1px solid var(--stone);border-radius:var(--r);padding:10px 14px;margin-bottom:8px;font-family:monospace;font-size:11px;color:var(--mid)">"Write a TrueTee barter DM for @[handle], [X] followers. They posted [describe post]. Under 80 words, genuine, no corporate language."</div>
+          <div style="background:var(--cream);border:1px solid var(--stone);border-radius:var(--r);padding:10px 14px;margin-bottom:8px;font-family:monospace;font-size:11px;color:var(--mid)">"Write a TrueTee content brief for a creator whose style is [describe]. Product: [name]."</div>
+          <div style="background:var(--cream);border:1px solid var(--stone);border-radius:var(--r);padding:10px 14px;font-family:monospace;font-size:11px;color:var(--mid)">"Write 3 reel hooks and a caption for TrueTee. Clip: [describe what the creator filmed]."</div>
         </div>
-        <div class="divider"></div>
-        <div style="font-size:12px;color:var(--muted)">AI tools use <strong>Claude Haiku</strong> — the fastest and most affordable model. Cost is roughly ₹0.05–0.10 per generation. For 100 DMs/week that is about ₹20/month.</div>
       </div>
-
-      <!-- DEPLOY GUIDE -->
+            <!-- DEPLOY GUIDE -->
       <div class="card">
         <div class="card-title">Step 3 — Deploy to GitHub Pages (free, 3 minutes)</div>
         <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:18px">
@@ -749,7 +694,7 @@ let activeFilter = 'all';
 let SCRIPT_URL = localStorage.getItem('tt_script_url') || '';
 const SL = {new:'s-new',dm:'s-dm',yes:'s-yes',ship:'s-ship',done:'s-done'};
 const SN = {new:'New',dm:'DM sent',yes:'Confirmed',ship:'Shipped',done:'Content received'};
-const titles = {overview:'Overview',digest:'This week',tracker:'Creator tracker',outreach:'DM templates',criteria:'Creator criteria',content:'Content strategy',playbook:'Execution playbook',ai:'AI assistant',notes:'Notes',setup:'Settings'};
+const titles = {overview:'Overview',digest:'This week',tracker:'Creator tracker',outreach:'DM templates',criteria:'Creator criteria',content:'Content strategy',playbook:'Execution playbook',notes:'Notes',setup:'Settings'};
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded', () => {
@@ -768,30 +713,11 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveLocal() {
   localStorage.setItem('tt_creators', JSON.stringify(creators));
 }
-function saveApiKey() {
-  const key = document.getElementById('api-key-input').value.trim();
-  const status = document.getElementById('api-key-status');
-  if (!key.startsWith('sk-ant-')) {
-    status.textContent = 'Invalid key format — must start with sk-ant-';
-    status.style.color = 'var(--red)';
-    return;
-  }
-  localStorage.setItem('tt_anthropic_key', key);
-  status.textContent = 'Key saved ✓ — AI tools ready once hosted';
-  status.style.color = 'var(--green)';
-}
-
 function loadLocalData() {
   const saved = localStorage.getItem('tt_creators');
   if (saved) { creators = JSON.parse(saved); renderTracker(); updateCounts(); calc(); }
   const notes = localStorage.getItem('tt_notes');
-  const apiKey = localStorage.getItem('tt_anthropic_key');
-  if (apiKey) {
-    const inp = document.getElementById('api-key-input');
-    if (inp) inp.value = apiKey;
-    const st = document.getElementById('api-key-status');
-    if (st) { st.textContent = 'Key saved ✓'; st.style.color = 'var(--green)'; }
-  }
+
   if (notes) document.getElementById('notes-area').value = notes;
   const url = localStorage.getItem('tt_script_url');
   if (url) document.getElementById('url-input').value = url;
@@ -1101,98 +1027,8 @@ function clearAll() {
   document.getElementById('notes-area').value = '';
 }
 
-// ── AI ──
-async function callClaude(prompt) {
-  // When running locally (file://), the Anthropic API can't be called directly due to browser security.
-  // This works correctly when hosted on GitHub Pages / Netlify / any web server.
-  // The API key is stored in Settings and never leaves your browser.
-  const apiKey = localStorage.getItem('tt_anthropic_key');
-  if (!apiKey) {
-    throw new Error('NO_KEY');
-  }
-  const isLocal = window.location.protocol === 'file:';
-  if (isLocal) {
-    throw new Error('LOCAL_FILE');
-  }
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1000,
-      messages: [{ role: 'user', content: prompt }]
-    })
-  });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error?.message || 'API error ' + res.status);
-  }
-  const data = await res.json();
-  return data.content?.map(b => b.text || '').join('') || 'No response generated.';
-}
 
-function handleAIError(e, outEl) {
-  if (e.message === 'NO_KEY') {
-    outEl.innerHTML = '<span style="color:#C8B89A">⚠ No API key saved. Go to <strong>Settings → AI Setup</strong> and paste your Anthropic API key.</span>';
-  } else if (e.message === 'LOCAL_FILE') {
-    outEl.innerHTML = '<span style="color:#C8B89A">⚠ AI tools require the dashboard to be hosted online (not opened as a local file). Deploy to GitHub Pages (free, 3 min) then it works instantly. See <strong>Settings → Deploy guide</strong>.</span>';
-  } else {
-    outEl.innerHTML = '<span style="color:#8B2020">Error: ' + e.message + '</span>';
-  }
-}
 
-async function genDM() {
-  const out = document.getElementById('out-dm'); const btn = document.getElementById('btn-dm');
-  const handle = document.getElementById('ai-handle').value||'this creator';
-  const followers = document.getElementById('ai-followers').value||'unknown';
-  const note = document.getElementById('ai-note').value;
-  out.className='ai-out show'; out.innerHTML='<span class="ai-loading">Writing your DM...</span>'; btn.disabled=true;
-  const prompt=`Write an Instagram DM for TrueTee, an Indian everyday basics tee brand. This is from the founder to a nano creator for a barter collab (free tee for natural UGC).
-
-Creator: ${handle} | Followers: ${followers}
-Post to reference: ${note||'general everyday style content'}
-
-Rules: Under 80 words. Start with ONE very specific genuine observation about their content. Do not use "synergy", "collaboration opportunity", or "brand ambassador". End with a simple open question. First person, warm but not salesy.`;
-  try { out.textContent = await callClaude(prompt); } catch(e) { out.textContent = 'Error: '+e.message; }
-  btn.disabled=false;
-}
-
-async function genBrief() {
-  const out = document.getElementById('out-brief'); const btn = document.getElementById('btn-brief');
-  const style = document.getElementById('ai-style').value;
-  const product = document.getElementById('ai-product').value;
-  out.className='ai-out show'; out.innerHTML='<span class="ai-loading">Writing the brief...</span>'; btn.disabled=true;
-  const prompt=`Write a UGC content brief for TrueTee, an Indian everyday basics tee brand. Tone: honest, minimal, non-corporate.
-
-Creator's aesthetic: ${style||'minimal, everyday casual'}
-Product: ${product||'TrueTee essential tee'}
-
-Include: 3 content ideas tailored to their style, format guidance, a note on creative freedom, usage rights clause. Under 200 words. Warm and collaborative.`;
-  try { out.textContent = await callClaude(prompt); } catch(e) { out.textContent = 'Error: '+e.message; }
-  btn.disabled=false;
-}
-
-async function genHooks() {
-  const out = document.getElementById('out-hook'); const btn = document.getElementById('btn-hook');
-  const desc = document.getElementById('ai-clip').value;
-  out.className='ai-out show'; out.innerHTML='<span class="ai-loading">Writing hooks...</span>'; btn.disabled=true;
-  const prompt=`Write Instagram Reel hooks and a caption for TrueTee, an Indian everyday basics tee brand.
-
-Clip: ${desc||'creator wearing TrueTee in everyday setting'}
-
-Provide:
-- 3 opening hooks (under 8 words each, scroll-stopping, native to Reels)
-- 1 caption (60–80 words, honest founder tone, no hashtag spam, soft CTA)
-
-Hooks must feel real, not like ads. Caption like the founder wrote it.`;
-  try { out.textContent = await callClaude(prompt); } catch(e) { out.textContent = 'Error: '+e.message; }
-  btn.disabled=false;
-}
 </script>
 </body>
 </html>
