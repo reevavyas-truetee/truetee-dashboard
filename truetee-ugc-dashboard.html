@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrueTee — Creator Program</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#111;--white:#FAFAF8;--cream:#F5F3EE;--stone:#E8E5DF;--muted:#9A9690;--mid:#6B6862;
+  --accent:#C8B89A;--accent-dark:#8A7A62;
+  --green:#2D5A3D;--green-light:#EAF2EC;
+  --red:#8B2020;--red-light:#F5EAEA;
+  --amber:#7A5A1A;--amber-light:#F5EDD8;
+  --blue:#1A3A5A;--blue-light:#E8EFF5;
+  --serif:'DM Serif Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --r:6px;--rl:10px;--sidebar:224px;--topbar:60px;
+}
+html{font-size:15px}
+body{font-family:var(--sans);background:var(--cream);color:var(--black);min-height:100vh;display:flex}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--stone);border-radius:2px}
+
+/* SIDEBAR */
+#sidebar{width:var(--sidebar);min-height:100vh;background:var(--black);position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:100}
+.sb-brand{padding:22px 20px 18px;border-bottom:1px solid #222}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:3px}
+.sb-mark{width:28px;height:28px;background:var(--white);border-radius:4px;display:flex;align-items:center;justify-content:center}
+.sb-mark span{font-family:var(--serif);font-size:11px;color:var(--black)}
+.sb-name{font-family:var(--serif);font-size:15px;color:var(--white)}
+.sb-tag{font-size:10px;color:#444;letter-spacing:0.08em;text-transform:uppercase}
+.sb-nav{flex:1;padding:14px 12px}
+.nav-section{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:#333;padding:12px 8px 6px;font-weight:500}
+.nav-btn{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r);cursor:pointer;color:var(--muted);font-size:13px;margin-bottom:1px;transition:all .14s;border:none;background:none;width:100%;text-align:left;font-family:var(--sans);position:relative}
+.nav-btn:hover{background:#1a1a1a;color:#ccc}
+.nav-btn.active{background:#1e1e1e;color:var(--white)}
+.nav-btn.active::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:2px;background:var(--accent);border-radius:0 2px 2px 0}
+.nav-btn svg{width:15px;height:15px;flex-shrink:0;opacity:.7}
+.nav-btn.active svg{opacity:1}
+.sb-bottom{padding:14px 12px;border-top:1px solid #1a1a1a}
+.sb-status{background:#1a1a1a;border-radius:var(--r);padding:12px 14px}
+.sb-status-label{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#333;margin-bottom:5px}
+.sb-status-val{font-size:13px;color:var(--white);font-weight:500}
+.sb-status-sub{font-size:10px;color:var(--muted);margin-top:3px}
+
+/* SYNC INDICATOR */
+.sync-dot{width:6px;height:6px;border-radius:50%;margin-left:auto;flex-shrink:0}
+.sync-ok{background:#2D5A3D}
+.sync-pending{background:#C8B89A;animation:blink 1s infinite}
+.sync-error{background:#8B2020}
+.sync-none{background:#333}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* MAIN */
+#main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column}
+#topbar{height:var(--topbar);background:var(--white);border-bottom:1px solid var(--stone);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+.tb-title{font-family:var(--serif);font-size:18px;color:var(--black)}
+.tb-right{display:flex;align-items:center;gap:12px}
+.tb-date{font-size:11px;color:var(--muted)}
+.tb-badge{font-size:10px;padding:4px 10px;border:1px solid var(--stone);border-radius:99px;color:var(--mid);letter-spacing:.04em}
+.tb-sync{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.tb-sync-dot{width:6px;height:6px;border-radius:50%}
+
+/* SETUP BANNER */
+#setup-banner{background:var(--black);color:var(--white);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#setup-banner.hidden{display:none}
+.setup-text{font-size:13px;line-height:1.5}
+.setup-text strong{font-weight:500}
+.setup-input{font-size:12px;padding:7px 12px;border:1px solid #444;border-radius:var(--r);background:#1a1a1a;color:var(--white);font-family:var(--sans);width:340px;max-width:100%}
+.setup-input:focus{outline:none;border-color:var(--accent)}
+.setup-input::placeholder{color:#555}
+.setup-btn{font-size:12px;padding:8px 18px;background:var(--white);color:var(--black);border:none;border-radius:var(--r);cursor:pointer;font-family:var(--sans);font-weight:500;white-space:nowrap;transition:background .15s}
+.setup-btn:hover{background:var(--accent)}
+.setup-dismiss{font-size:11px;color:#555;cursor:pointer;text-decoration:underline;white-space:nowrap}
+.setup-dismiss:hover{color:var(--white)}
+
+/* CONTENT */
+#content{flex:1;padding:26px 28px}
+.panel{display:none;animation:fadeIn .18s ease}
+.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTION HEADER */
+.sh{margin-bottom:22px}
+.sh h2{font-family:var(--serif);font-size:26px;color:var(--black);margin-bottom:3px}
+.sh p{font-size:13px;color:var(--muted)}
+
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--stone);border-radius:var(--rl);padding:20px 22px}
+.card-title{font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:22px}
+.mc{background:var(--white);border:1px solid var(--stone);border-radius:var(--rl);padding:18px 20px}
+.mc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.mc-icon{width:30px;height:30px;border-radius:var(--r);display:flex;align-items:center;justify-content:center}
+.mc-icon svg{width:14px;height:14px}
+.mc-val{font-family:var(--serif);font-size:30px;color:var(--black);line-height:1;margin-bottom:3px}
+.mc-label{font-size:11px;color:var(--muted)}
+.mc-sub{font-size:10px;color:var(--accent-dark);margin-top:3px}
+.trend{font-size:10px;padding:2px 7px;border-radius:99px}
+.trend-up{background:var(--green-light);color:var(--green)}
+.trend-n{background:var(--stone);color:var(--mid)}
+
+/* LAYOUT */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.row{display:flex;gap:12px}
+.col{flex:1;min-width:0}
+.mb12{margin-bottom:12px}
+.mb20{margin-bottom:20px}
+.mb24{margin-bottom:24px}
+.divider{height:1px;background:var(--stone);margin:18px 0}
+
+/* FUNNEL */
+.funnel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--stone);border-radius:var(--rl);overflow:hidden;margin-bottom:22px}
+.fs{padding:16px;text-align:center;border-right:1px solid var(--stone);background:var(--white);position:relative}
+.fs:last-child{border-right:none}
+.fs::after{content:'→';position:absolute;right:-10px;top:50%;transform:translateY(-50%);color:var(--stone);font-size:13px;z-index:1}
+.fs:last-child::after{display:none}
+.fs-num{font-family:var(--serif);font-size:26px;color:var(--black);line-height:1}
+.fs-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:5px}
+.fs-pct{font-size:10px;color:var(--accent-dark);margin-top:3px}
+
+/* PROGRESS */
+.pi{margin-bottom:15px}
+.pi-header{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}
+.pi-track{height:3px;background:var(--stone);border-radius:99px;overflow:hidden}
+.pi-fill{height:100%;border-radius:99px;transition:width .4s ease}
+
+/* SLIDERS */
+input[type=range]{width:100%;height:2px;appearance:none;background:var(--stone);border-radius:99px;cursor:pointer;margin-top:6px}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:var(--black);border:2px solid var(--white);box-shadow:0 0 0 1px var(--black)}
+
+/* WEEK GRID */
+.wgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:22px}
+.dcard{background:var(--white);border:1px solid var(--stone);border-radius:var(--rl);padding:14px}
+.dcard-day{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.dcard-action{font-family:var(--serif);font-size:14px;color:var(--black);margin-bottom:6px}
+.dcard-desc{font-size:11px;color:var(--mid);line-height:1.5;margin-bottom:8px}
+.pill{display:inline-block;font-size:9px;padding:3px 9px;border-radius:99px;font-weight:500}
+.pill-black{background:var(--black);color:var(--white)}
+.pill-stone{background:var(--stone);color:var(--mid)}
+.pill-accent{background:var(--accent);color:var(--black)}
+
+/* CHECKLIST */
+.ci{display:flex;align-items:flex-start;gap:11px;padding:10px 0;border-bottom:1px solid var(--stone);cursor:pointer}
+.ci:last-child{border-bottom:none}
+.ci:hover{background:var(--cream);margin:0 -22px;padding-left:22px;padding-right:22px}
+.ci-box{width:16px;height:16px;flex-shrink:0;margin-top:1px;border:1.5px solid var(--stone);border-radius:4px;display:flex;align-items:center;justify-content:center;transition:all .14s}
+.ci-box.done{background:var(--black);border-color:var(--black)}
+.ci-tick{display:none}
+.ci-box.done .ci-tick{display:block}
+.ci-lbl{font-size:12px;color:var(--black);line-height:1.5}
+.ci-lbl.done{color:var(--muted);text-decoration:line-through}
+.ci-tag{margin-left:auto;flex-shrink:0;font-size:9px;padding:2px 7px;border-radius:99px;border:1px solid var(--stone);color:var(--muted)}
+
+/* TEMPLATES */
+.tmpl{background:var(--white);border:1px solid var(--stone);border-radius:var(--rl);overflow:hidden;margin-bottom:10px}
+.tmpl-head{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;background:var(--cream);border-bottom:1px solid var(--stone)}
+.tmpl-tag-row{display:flex;align-items:center;gap:8px}
+.tpill{font-size:9px;padding:3px 9px;border-radius:99px;font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+.tmpl-name{font-size:12px;color:var(--black);font-weight:500}
+.copy-btn{font-size:11px;padding:5px 13px;border:1px solid var(--stone);border-radius:var(--r);background:var(--white);cursor:pointer;color:var(--mid);font-family:var(--sans);transition:all .14s}
+.copy-btn:hover{background:var(--black);color:var(--white);border-color:var(--black)}
+.copy-btn.copied{background:var(--green);color:var(--white);border-color:var(--green)}
+.tmpl-body{padding:16px 18px;font-size:12px;color:var(--mid);line-height:1.8;white-space:pre-line}
+
+/* RIGHTS */
+.rights{background:var(--amber-light);border:1px solid #D4B870;border-radius:var(--r);padding:12px 16px;margin-bottom:14px}
+.rights-lbl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);font-weight:500;margin-bottom:3px}
+.rights p{font-size:12px;color:var(--amber);line-height:1.6;font-style:italic}
+
+/* HASHTAGS */
+.htags{display:flex;flex-wrap:wrap;gap:6px}
+.htag{font-size:11px;padding:5px 12px;border:1px solid var(--stone);border-radius:99px;color:var(--mid);background:var(--white);transition:all .13s;cursor:default}
+.htag:hover{border-color:var(--black);color:var(--black)}
+
+/* CRITERIA */
+.crit-item{display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid var(--stone);font-size:12px;color:var(--mid);line-height:1.4}
+.crit-item:last-child{border-bottom:none}
+.cdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.dg{background:var(--green)}.dr{background:var(--red)}.da{background:var(--amber)}
+
+/* ENG CALC */
+.eng-inputs{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.eng-field label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px}
+.eng-field input{font-size:14px;padding:7px 11px;border:1px solid var(--stone);border-radius:var(--r);background:var(--white);color:var(--black);font-family:var(--sans);width:130px;transition:border-color .14s}
+.eng-field input:focus{outline:none;border-color:var(--black)}
+.eng-result{display:flex;align-items:center;gap:18px;padding-top:14px;border-top:1px solid var(--stone)}
+.eng-pct{font-family:var(--serif);font-size:36px;color:var(--black);line-height:1}
+.eng-verdict{font-size:12px;font-weight:500;padding:5px 14px;border-radius:99px}
+.ev-ex{background:var(--green-light);color:var(--green)}
+.ev-gd{background:#E8F5EA;color:#2A7A3A}
+.ev-bd{background:var(--amber-light);color:var(--amber)}
+.ev-sk{background:var(--red-light);color:var(--red)}
+.eng-hint{font-size:10px;color:var(--muted);margin-top:6px}
+
+/* SCORECARD */
+.score-wrap{display:flex;align-items:center;gap:22px;padding:18px 0;border-bottom:1px solid var(--stone);margin-bottom:14px}
+.score-ring{position:relative;width:80px;height:80px;flex-shrink:0}
+.score-ring svg{transform:rotate(-90deg)}
+.score-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:22px;color:var(--black)}
+.score-rows{flex:1}
+.score-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0}
+.sk{color:var(--muted)}.sv{font-weight:500;color:var(--black)}
+.score-checks{display:flex;gap:10px;flex-wrap:wrap;margin-top:2px}
+.score-checks label{font-size:12px;color:var(--mid);display:flex;align-items:center;gap:6px;cursor:pointer}
+
+/* CONTENT FORMATS */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.fcard{background:var(--white);border:1px solid var(--stone);border-radius:var(--rl);padding:14px 16px}
+.ftype{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.fi{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--stone);font-size:12px;color:var(--mid)}
+.fi:last-child{border-bottom:none}
+.fdot{width:4px;height:4px;border-radius:50%;background:var(--accent);flex-shrink:0}
+
+/* REPURPOSE */
+.rstep{display:flex;align-items:flex-start;gap:11px;padding:10px 0;border-bottom:1px solid var(--stone)}
+.rstep:last-child{border-bottom:none}
+.rnum{width:22px;height:22px;border-radius:50%;background:var(--black);color:var(--white);font-size:10px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.rtxt{font-size:12px;color:var(--mid);line-height:1.5}
+.rtxt strong{color:var(--black);font-weight:500;display:block;margin-bottom:1px}
+
+/* HOOKS */
+.hook{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--stone);font-size:12px;color:var(--mid)}
+.hook:last-child{border-bottom:none}
+.hook em{font-style:italic;color:var(--black)}
+
+/* FOLDERS */
+.folders{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.folder{background:var(--cream);border:1px solid var(--stone);border-radius:var(--r);padding:9px 13px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mid)}
+
+/* TRACKER */
+.tracker-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.ti{font-size:12px;padding:7px 10px;border:1px solid var(--stone);border-radius:var(--r);background:var(--white);color:var(--black);font-family:var(--sans);transition:border-color .14s}
+.ti:focus{outline:none;border-color:var(--black)}
+.ti.wide{flex:1;min-width:90px}
+.ts{font-size:12px;padding:7px 10px;border:1px solid var(--stone);border-radius:var(--r);background:var(--white);color:var(--black);font-family:var(--sans);cursor:pointer}
+.t-add{font-size:12px;padding:7px 18px;background:var(--black);color:var(--white);border:1px solid var(--black);border-radius:var(--r);cursor:pointer;font-family:var(--sans);font-weight:500;white-space:nowrap;transition:all .14s}
+.t-add:hover{background:#333}
+.t-add:disabled{opacity:.5;cursor:not-allowed}
+.fbbar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.fb{font-size:11px;padding:5px 12px;border:1px solid var(--stone);border-radius:99px;background:var(--white);cursor:pointer;color:var(--mid);font-family:var(--sans);transition:all .13s}
+.fb:hover{border-color:var(--black);color:var(--black)}
+.fb.active{background:var(--black);color:var(--white);border-color:var(--black)}
+.twrap{overflow-x:auto;border:1px solid var(--stone);border-radius:var(--rl)}
+table.tt{width:100%;border-collapse:collapse;font-size:12px;background:var(--white);table-layout:fixed}
+table.tt th{text-align:left;padding:9px 14px;font-size:9px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--stone);background:var(--cream)}
+table.tt td{padding:10px 14px;border-bottom:1px solid var(--stone);color:var(--black);vertical-align:middle}
+table.tt tbody tr:last-child td{border-bottom:none}
+table.tt tbody tr:hover td{background:var(--cream)}
+.sb{display:inline-block;font-size:9px;padding:3px 9px;border-radius:99px;font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+.s-new{background:var(--blue-light);color:var(--blue)}
+.s-dm{background:var(--amber-light);color:var(--amber)}
+.s-yes{background:var(--green-light);color:var(--green)}
+.s-ship{background:var(--stone);color:var(--mid)}
+.s-done{background:var(--black);color:var(--white)}
+.del-btn{font-size:10px;padding:3px 8px;border:1px solid var(--stone);border-radius:var(--r);background:none;cursor:pointer;color:var(--muted);font-family:var(--sans);transition:all .12s}
+.del-btn:hover{border-color:var(--red);color:var(--red)}
+.ss{font-size:10px;padding:3px 7px;border:1px solid var(--stone);border-radius:var(--r);background:var(--white);color:var(--mid);font-family:var(--sans);cursor:pointer}
+.empty-row td{text-align:center;padding:30px!important;color:var(--muted)!important;font-size:12px!important}
+.tstats{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
+.tstat{font-size:11px;color:var(--muted)}
+.tstat strong{color:var(--black)}
+
+/* TIMELINE */
+.tlcard{background:var(--white);border:1px solid var(--stone);border-radius:var(--rl);padding:16px 18px}
+.tlmonth{font-family:var(--serif);font-size:17px;margin-bottom:12px}
+.tlrow{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--stone);font-size:12px}
+.tlrow:last-child{border-bottom:none}
+.tlk{color:var(--muted)}.tlv{font-weight:500;color:var(--black)}
+
+/* DIGEST */
+.dd{border-left:2px solid var(--stone);padding:0 0 18px 18px;position:relative}
+.dd::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--white);border:2px solid var(--black);position:absolute;left:-5px;top:3px}
+.dd.today::before{background:var(--black)}
+.dd-day{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.dd.today .dd-day{color:var(--black)}
+.dd-task{font-size:14px;color:var(--black);font-family:var(--serif);margin-bottom:3px}
+.dd-detail{font-size:12px;color:var(--muted);line-height:1.5}
+.dd-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.da-btn{font-size:11px;padding:4px 12px;border:1px solid var(--stone);border-radius:99px;color:var(--mid);background:var(--white);cursor:pointer;font-family:var(--sans);transition:all .12s}
+.da-btn:hover{border-color:var(--black);color:var(--black)}
+.da-btn.primary{background:var(--black);color:var(--white);border-color:var(--black)}
+
+/* AI */
+.ai-card{background:var(--black);border-radius:var(--rl);padding:20px 22px;margin-bottom:12px}
+.ai-title{font-family:var(--serif);font-size:18px;color:var(--white);margin-bottom:4px}
+.ai-sub{font-size:12px;color:#666;margin-bottom:16px}
+.ai-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.ai-in{flex:1;min-width:180px;font-size:13px;padding:9px 13px;border:1px solid #333;border-radius:var(--r);background:#1a1a1a;color:var(--white);font-family:var(--sans);transition:border-color .14s}
+.ai-in:focus{outline:none;border-color:#555}
+.ai-in::placeholder{color:#444}
+.ai-ta{width:100%;font-size:13px;padding:9px 13px;border:1px solid #333;border-radius:var(--r);background:#1a1a1a;color:var(--white);font-family:var(--sans);resize:vertical;min-height:65px;margin-bottom:10px;transition:border-color .14s}
+.ai-ta:focus{outline:none;border-color:#555}
+.ai-ta::placeholder{color:#444}
+.ai-btn{font-size:12px;padding:9px 20px;background:var(--white);color:var(--black);border:none;border-radius:var(--r);cursor:pointer;font-family:var(--sans);font-weight:500;transition:all .14s}
+.ai-btn:hover{background:var(--accent)}
+.ai-btn:disabled{opacity:.4;cursor:not-allowed}
+.ai-out{margin-top:14px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:var(--r);padding:14px 16px;font-size:13px;color:#bbb;line-height:1.75;white-space:pre-wrap;display:none}
+.ai-out.show{display:block}
+.ai-loading{color:#555;font-style:italic;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* NOTES */
+.notes-area{width:100%;min-height:120px;font-size:13px;padding:12px 14px;border:1px solid var(--stone);border-radius:var(--r);background:var(--white);color:var(--black);font-family:var(--sans);resize:vertical;line-height:1.7;transition:border-color .14s}
+.notes-area:focus{outline:none;border-color:var(--black)}
+.save-btn{font-size:12px;padding:8px 18px;background:var(--black);color:var(--white);border:none;border-radius:var(--r);cursor:pointer;font-family:var(--sans);margin-top:8px;transition:all .14s}
+.save-btn:hover{background:#333}
+.save-btn.saved{background:var(--green)}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo">
+      <div class="sb-mark"><span>TT</span></div>
+      <span class="sb-name">TrueTee</span>
+    </div>
+    <div class="sb-tag">Creator Program</div>
+  </div>
+  <div class="sb-nav">
+    <div class="nav-section">Campaign</div>
+    <button class="nav-btn active" onclick="show('overview',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>
+      Overview
+      <span class="sync-dot sync-none" id="sync-ind"></span>
+    </button>
+    <button class="nav-btn" onclick="show('digest',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><polyline points="8,5 8,8 10,10"/></svg>
+      This week
+    </button>
+    <button class="nav-btn" onclick="show('tracker',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="14" height="11" rx="1.5"/><line x1="1" y1="7" x2="15" y2="7"/><line x1="6" y1="7" x2="6" y2="14"/></svg>
+      Creator tracker
+    </button>
+    <div class="nav-section">Outreach</div>
+    <button class="nav-btn" onclick="show('outreach',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h12a1 1 0 011 1v8a1 1 0 01-1 1H2a1 1 0 01-1-1V4a1 1 0 011-1z"/><polyline points="1,3 8,9 15,3"/></svg>
+      DM templates
+    </button>
+    <button class="nav-btn" onclick="show('criteria',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+      Creator criteria
+    </button>
+    <div class="nav-section">Content</div>
+    <button class="nav-btn" onclick="show('content',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="8,1 10,6 15,6 11,9 13,15 8,11 3,15 5,9 1,6 6,6"/></svg>
+      Content strategy
+    </button>
+    <button class="nav-btn" onclick="show('playbook',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="1" width="12" height="14" rx="1.5"/><line x1="5" y1="5" x2="11" y2="5"/><line x1="5" y1="8" x2="11" y2="8"/><line x1="5" y1="11" x2="9" y2="11"/></svg>
+      Playbook
+    </button>
+    <div class="nav-section">Tools</div>
+    <button class="nav-btn" onclick="show('ai',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2a6 6 0 100 12A6 6 0 008 2z"/><circle cx="8" cy="8" r="2"/></svg>
+      AI assistant
+    </button>
+    <button class="nav-btn" onclick="show('notes',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h10a1 1 0 011 1v9l-3 3H3a1 1 0 01-1-1V3a1 1 0 011-1z"/><line x1="5" y1="6" x2="11" y2="6"/><line x1="5" y1="9" x2="9" y2="9"/></svg>
+      Notes
+    </button>
+    <button class="nav-btn" onclick="show('setup',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41"/></svg>
+      Settings
+    </button>
+  </div>
+  <div class="sb-bottom">
+    <div class="sb-status">
+      <div class="sb-status-label">Campaign status</div>
+      <div class="sb-status-val" id="sb-week">Week 1 of 12</div>
+      <div class="sb-status-sub" id="sb-sub">0 creators in pipeline</div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <!-- SETUP BANNER -->
+  <div id="setup-banner">
+    <div class="setup-text"><strong>Connect Google Sheets</strong> to save your data permanently across all devices. Paste your Web App URL below.</div>
+    <input type="text" class="setup-input" id="banner-url-input" placeholder="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec">
+    <button class="setup-btn" onclick="saveUrlFromBanner()">Connect</button>
+    <span class="setup-dismiss" onclick="dismissBanner()">Set up later</span>
+  </div>
+
+  <!-- TOPBAR -->
+  <header id="topbar">
+    <div class="tb-title" id="topbar-title">Overview</div>
+    <div class="tb-right">
+      <span class="tb-date" id="topbar-date"></span>
+      <div class="tb-sync" id="sync-status">
+        <div class="tb-sync-dot" id="sync-dot" style="background:#ddd"></div>
+        <span id="sync-text">Not connected</span>
+      </div>
+      <span class="tb-badge">UGC Barter Program</span>
+    </div>
+  </header>
+
+  <div id="content">
+
+    <!-- OVERVIEW -->
+    <div class="panel active" id="panel-overview">
+      <div class="sh"><h2>Campaign overview</h2><p>Live metrics for your creator pipeline and content targets.</p></div>
+      <div class="metrics">
+        <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:#EFF6FF"><svg viewBox="0 0 16 16" fill="none" stroke="#1A3A5A" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg></div><span class="trend trend-n" id="tr1">—</span></div><div class="mc-val" id="mv1">0</div><div class="mc-label">Creators contacted</div><div class="mc-sub">Target: 80 / month</div></div>
+        <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:var(--green-light)"><svg viewBox="0 0 16 16" fill="none" stroke="#2D5A3D" stroke-width="1.5"><polyline points="1,9 5,5 9,8 15,3"/><polyline points="11,3 15,3 15,7"/></svg></div><span class="trend trend-n" id="tr2">—</span></div><div class="mc-val" id="mv2">0</div><div class="mc-label">Confirmed collabs</div><div class="mc-sub">~10–15% conversion</div></div>
+        <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:#F5F0EA"><svg viewBox="0 0 16 16" fill="none" stroke="#8A7A62" stroke-width="1.5"><polygon points="8,1 10,6 15,6 11,9 13,15 8,11 3,15 5,9 1,6 6,6"/></svg></div><span class="trend trend-n" id="tr3">—</span></div><div class="mc-val" id="mv3">0</div><div class="mc-label">Clips received</div><div class="mc-sub">Goal: 60 in 90 days</div></div>
+        <div class="mc"><div class="mc-top"><div class="mc-icon" style="background:var(--stone)"><svg viewBox="0 0 16 16" fill="none" stroke="#6B6862" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg></div><span class="trend trend-n" id="tr4">—</span></div><div class="mc-val" id="mv4">0</div><div class="mc-label">Repurposed pieces</div><div class="mc-sub">5× per clip</div></div>
+      </div>
+      <div class="row mb24">
+        <div class="col">
+          <div class="card mb12">
+            <div class="card-title">Conversion funnel</div>
+            <div class="funnel">
+              <div class="fs"><div class="fs-num" id="fn1">0</div><div class="fs-lbl">Contacted</div><div class="fs-pct">base</div></div>
+              <div class="fs"><div class="fs-num" id="fn2">0</div><div class="fs-lbl">Replied</div><div class="fs-pct">~30%</div></div>
+              <div class="fs"><div class="fs-num" id="fn3">0</div><div class="fs-lbl">Confirmed</div><div class="fs-pct">~12%</div></div>
+              <div class="fs"><div class="fs-num" id="fn4">0</div><div class="fs-lbl">Posted</div><div class="fs-pct">~85%</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">90-day progress</div>
+            <div class="pi"><div class="pi-header"><span style="font-size:12px">Clips received</span><span style="font-size:12px;color:var(--muted)" id="pp1">0 / 60</span></div><div class="pi-track"><div class="pi-fill" id="pf1" style="width:0%;background:var(--green)"></div></div></div>
+            <div class="pi"><div class="pi-header"><span style="font-size:12px">Creators who wore TrueTee</span><span style="font-size:12px;color:var(--muted)" id="pp2">0 / 40</span></div><div class="pi-track"><div class="pi-fill" id="pf2" style="width:0%;background:var(--black)"></div></div></div>
+            <div class="pi"><div class="pi-header"><span style="font-size:12px">Total content pieces</span><span style="font-size:12px;color:var(--muted)" id="pp3">0 / 300</span></div><div class="pi-track"><div class="pi-fill" id="pf3" style="width:0%;background:var(--accent)"></div></div></div>
+          </div>
+        </div>
+        <div style="width:250px;flex-shrink:0">
+          <div class="card">
+            <div class="card-title">Update numbers</div>
+            <div style="margin-bottom:18px"><div style="font-family:var(--serif);font-size:22px;color:var(--black)" id="sv1">0</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin:4px 0 2px">Contacted</div><input type="range" min="0" max="160" step="1" value="0" id="sl1" oninput="calc()"></div>
+            <div style="margin-bottom:18px"><div style="font-family:var(--serif);font-size:22px;color:var(--black)" id="sv2">0</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin:4px 0 2px">Confirmed</div><input type="range" min="0" max="50" step="1" value="0" id="sl2" oninput="calc()"></div>
+            <div><div style="font-family:var(--serif);font-size:22px;color:var(--black)" id="sv3">0</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin:4px 0 2px">Clips received</div><input type="range" min="0" max="80" step="1" value="0" id="sl3" oninput="calc()"></div>
+            <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--stone)">
+              <button class="save-btn" id="save-metrics-btn" onclick="saveMetricsToSheets()" style="width:100%">Save metrics to Sheets</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">90-day targets</div>
+        <div class="three-col">
+          <div class="tlcard"><div class="tlmonth">Month 1</div><div class="tlrow"><span class="tlk">Contacted</span><span class="tlv">80</span></div><div class="tlrow"><span class="tlk">Confirmed</span><span class="tlv">8–12</span></div><div class="tlrow"><span class="tlk">Clips</span><span class="tlv">6–10</span></div><div class="tlrow"><span class="tlk">Reply rate</span><span class="tlv">~30%</span></div></div>
+          <div class="tlcard"><div class="tlmonth">Month 2</div><div class="tlrow"><span class="tlk">Contacted</span><span class="tlv">120</span></div><div class="tlrow"><span class="tlk">Confirmed</span><span class="tlv">18–25</span></div><div class="tlrow"><span class="tlk">Clips</span><span class="tlv">20–30</span></div><div class="tlrow"><span class="tlk">Creator circle</span><span class="tlv">Launch</span></div></div>
+          <div class="tlcard"><div class="tlmonth">Month 3</div><div class="tlrow"><span class="tlk">Contacted</span><span class="tlv">160+</span></div><div class="tlrow"><span class="tlk">Confirmed</span><span class="tlv">40–50</span></div><div class="tlrow"><span class="tlk">Clips</span><span class="tlv">60–80</span></div><div class="tlrow"><span class="tlk">Inbound starts</span><span class="tlv">Begin</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIGEST -->
+    <div class="panel" id="panel-digest">
+      <div class="sh"><h2>This week</h2><p>Your daily action plan — follow this every week without fail.</p></div>
+      <div class="two-col mb24">
+        <div>
+          <div style="display:flex;flex-direction:column;gap:0;padding:0 0 0 4px">
+            <div class="dd today"><div class="dd-day">Monday — Discovery</div><div class="dd-task">Find 20 new creators</div><div class="dd-detail">Use hashtags, explore, competitor followers. Log each one in the tracker immediately.</div><div class="dd-actions"><button class="da-btn primary" onclick="show('tracker',qn('[onclick*=tracker]'))">Open tracker ↗</button><button class="da-btn" onclick="show('criteria',qn('[onclick*=criteria]'))">View criteria</button></div></div>
+            <div class="dd"><div class="dd-day">Tuesday — Outreach</div><div class="dd-task">Send 20 DMs</div><div class="dd-detail">Use Template A. Write a personal first line for each. Reference a specific post. Non-negotiable.</div><div class="dd-actions"><button class="da-btn primary" onclick="show('outreach',qn('[onclick*=outreach]'))">Template A ↗</button></div></div>
+            <div class="dd"><div class="dd-day">Wednesday — Follow-ups</div><div class="dd-task">Nudge last Tuesday's batch</div><div class="dd-detail">Anyone who hasn't replied from 7 days ago gets Template B. Handle all incoming replies.</div><div class="dd-actions"><button class="da-btn primary" onclick="show('outreach',qn('[onclick*=outreach]'))">Template B ↗</button></div></div>
+            <div class="dd"><div class="dd-day">Thursday — Confirm</div><div class="dd-task">Lock in 5–8 creators</div><div class="dd-detail">Send Template C to all interested replies. Collect size, colour and shipping address.</div><div class="dd-actions"><button class="da-btn primary" onclick="show('outreach',qn('[onclick*=outreach]'))">Template C ↗</button></div></div>
+            <div class="dd"><div class="dd-day">Friday — Ship + repurpose</div><div class="dd-task">Ship orders, edit content</div><div class="dd-detail">Ship confirmed orders. Process any content received. Schedule one reel for the weekend.</div><div class="dd-actions"><button class="da-btn primary" onclick="show('content',qn('[onclick*=content]'))">Content strategy ↗</button></div></div>
+          </div>
+        </div>
+        <div>
+          <div class="card mb12"><div class="card-title">Friday review — check these every week</div><div class="crit-item"><div class="cdot dg"></div>DMs sent this week vs target of 20</div><div class="crit-item"><div class="cdot dg"></div>Reply rate — should be 20–30%</div><div class="crit-item"><div class="cdot dg"></div>Creators confirmed this week</div><div class="crit-item"><div class="cdot dg"></div>Products shipped, tracking shared</div><div class="crit-item"><div class="cdot dg"></div>Content received + repurposed into 5 pieces</div><div class="crit-item"><div class="cdot dg"></div>At least one reel posted using UGC</div></div>
+          <div class="card mb12"><div class="card-title" style="color:var(--amber)">If reply rate is below 20%</div><div class="crit-item"><div class="cdot da"></div>First line isn't specific enough — be more exact</div><div class="crit-item"><div class="cdot da"></div>Try pulling back to 1k–3k follower range</div><div class="crit-item"><div class="cdot da"></div>Comment on their posts before DMing</div><div class="crit-item"><div class="cdot da"></div>DM from founder account, not brand account</div></div>
+          <div class="card"><div class="card-title" style="color:var(--red)">If content doesn't arrive</div><div class="crit-item"><div class="cdot dr"></div>Send Template D exactly 10 days after delivery</div><div class="crit-item"><div class="cdot dr"></div>No reply after 20 days — mark as no-show</div><div class="crit-item"><div class="cdot dr"></div>No-show rate above 30% — brief needs sharper expectations</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRACKER -->
+    <div class="panel" id="panel-tracker">
+      <div class="sh"><h2>Creator tracker</h2><p>Every creator in your pipeline. Data syncs to Google Sheets automatically.</p></div>
+      <div class="tracker-bar">
+        <input type="text" class="ti wide" id="t-handle" placeholder="@instagram_handle">
+        <input type="number" class="ti" id="t-followers" placeholder="Followers" style="width:120px">
+        <input type="text" class="ti" id="t-type" placeholder="Content type" style="width:150px">
+        <input type="text" class="ti" id="t-location" placeholder="City" style="width:110px">
+        <select class="ts" id="t-status">
+          <option value="new">New</option><option value="dm">DM sent</option>
+          <option value="yes">Confirmed</option><option value="ship">Shipped</option>
+          <option value="done">Content received</option>
+        </select>
+        <button class="t-add" id="add-btn" onclick="addCreator()">+ Add creator</button>
+      </div>
+      <div class="fbbar">
+        <button class="fb active" onclick="filterBy('all',this)">All <span id="fc-all">0</span></button>
+        <button class="fb" onclick="filterBy('new',this)">New <span id="fc-new">0</span></button>
+        <button class="fb" onclick="filterBy('dm',this)">DM sent <span id="fc-dm">0</span></button>
+        <button class="fb" onclick="filterBy('yes',this)">Confirmed <span id="fc-yes">0</span></button>
+        <button class="fb" onclick="filterBy('ship',this)">Shipped <span id="fc-ship">0</span></button>
+        <button class="fb" onclick="filterBy('done',this)">Content received <span id="fc-done">0</span></button>
+      </div>
+      <div class="twrap">
+        <table class="tt">
+          <thead><tr><th style="width:20%">Handle</th><th style="width:12%">Followers</th><th style="width:18%">Content type</th><th style="width:12%">City</th><th style="width:14%">Status</th><th style="width:14%">Update</th><th style="width:10%">Remove</th></tr></thead>
+          <tbody id="tbody"><tr class="empty-row"><td colspan="7">No creators yet — add one above</td></tr></tbody>
+        </table>
+      </div>
+      <div class="tstats" id="tstats"></div>
+    </div>
+
+    <!-- OUTREACH -->
+    <div class="panel" id="panel-outreach">
+      <div class="sh"><h2>DM templates</h2><p>Four-stage outreach sequence. Copy, personalise, send.</p></div>
+      <div class="rights"><div class="rights-lbl">Usage rights — confirm this in every collab</div><p>"By accepting the product, you're giving TrueTee permission to repost and use your content for social media and paid ads. We'll always credit you, and you can ask us to remove anything at any time."</p></div>
+      <div class="tmpl"><div class="tmpl-head"><div class="tmpl-tag-row"><span class="tpill" style="background:var(--black);color:var(--white)">A — Cold DM</span><span class="tmpl-name">Initial outreach</span></div><button class="copy-btn" onclick="copyT(this,'ta')">Copy</button></div><div class="tmpl-body" id="ta">Hi [Name],
+
+[One genuinely specific observation — e.g. "The airport fit reel you posted last week was really clean." Be exact, not generic.]
+
+We're building TrueTee — honestly made, everyday tees. No logos, no noise.
+
+We're reaching out to a small group of people with a natural everyday style. Simple idea: we send you one of our tees, you wear it and create whatever feels natural. No script, no brand tone.
+
+Would you be open to it?</div></div>
+      <div class="tmpl"><div class="tmpl-head"><div class="tmpl-tag-row"><span class="tpill" style="background:var(--stone);color:var(--mid)">B — Follow-up</span><span class="tmpl-name">5 days after no reply</span></div><button class="copy-btn" onclick="copyT(this,'tb')">Copy</button></div><div class="tmpl-body" id="tb">Hey [Name], just a quick follow-up on my message from earlier this week.
+
+No pressure at all if you're not interested or it's a busy time.
+
+If you are open to it, we'd love to send a tee your way. Just reply and we'll sort it out.</div></div>
+      <div class="tmpl"><div class="tmpl-head"><div class="tmpl-tag-row"><span class="tpill" style="background:var(--green-light);color:var(--green)">C — Brief</span><span class="tmpl-name">After they say yes</span></div><button class="copy-btn" onclick="copyT(this,'tc')">Copy</button></div><div class="tmpl-body" id="tc">Amazing — really glad you're in.
+
+Some loose ideas if you want a starting point, but do whatever feels natural:
+• 3 ways you'd style this tee
+• A day in my life wearing it
+• Mirror fit check
+• Honest first impression when it arrives
+• Coffee run / campus / everyday outfit
+
+Format: ideally one reel (30–60 sec). Stories are a bonus. No hard deadline, but within 2 weeks would be great.
+
+Quick note: by accepting the tee, you're giving TrueTee permission to repost and use your content for our social and ads. We'll always credit you, and you can ask us to remove anything anytime.
+
+What size works for you, and where should we ship?</div></div>
+      <div class="tmpl"><div class="tmpl-head"><div class="tmpl-tag-row"><span class="tpill" style="background:var(--accent);color:var(--black)">D — Nudge</span><span class="tmpl-name">10 days after delivery</span></div><button class="copy-btn" onclick="copyT(this,'td')">Copy</button></div><div class="tmpl-body" id="td">Hey [Name], hope the tee arrived safely!
+
+No rush at all — just checking in to see if you had any questions or needed anything from our side.
+
+Looking forward to seeing how you style it.</div></div>
+      <div class="divider"></div>
+      <div class="card-title mb12">Discovery hashtags</div>
+      <div class="htags"><span class="htag">#indianmenswear</span><span class="htag">#menswearindia</span><span class="htag">#indianstreetstyle</span><span class="htag">#minimalmenswear</span><span class="htag">#everydaystyleindia</span><span class="htag">#outfitoftheday</span><span class="htag">#minimalfashion</span><span class="htag">#delhifashion</span><span class="htag">#mumbaifashion</span><span class="htag">#bangalorefashion</span><span class="htag">#tshirtoutfit</span><span class="htag">#capsulewardrobe</span><span class="htag">#slowfashionindia</span><span class="htag">#casualmenswear</span><span class="htag">#minimalistfashion</span><span class="htag">#streetstyleindia</span><span class="htag">#everydayoutfit</span><span class="htag">#cleanstyle</span></div>
+    </div>
+
+    <!-- CRITERIA -->
+    <div class="panel" id="panel-criteria">
+      <div class="sh"><h2>Creator criteria</h2><p>Evaluate every profile before you reach out.</p></div>
+      <div class="two-col mb20">
+        <div class="card"><div class="card-title" style="color:var(--green)">Look for this</div><div class="crit-item"><div class="cdot dg"></div>1,000–10,000 followers (nano range)</div><div class="crit-item"><div class="cdot dg"></div>80–200 likes per post at 1k followers</div><div class="crit-item"><div class="cdot dg"></div>Outfit reels, lifestyle vlogs, mirror fit checks</div><div class="crit-item"><div class="cdot dg"></div>Clean, casual, everyday aesthetic</div><div class="crit-item"><div class="cdot dg"></div>Natural lighting and relatable settings</div><div class="crit-item"><div class="cdot dg"></div>Posts at least 2× per month</div><div class="crit-item"><div class="cdot dg"></div>Responds to comments — genuine community</div><div class="crit-item"><div class="cdot dg"></div>Looks like a real TrueTee customer</div><div class="crit-item"><div class="cdot dg"></div>Based in India — tier 1 or tier 2 city</div></div>
+        <div class="card"><div class="card-title" style="color:var(--red)">Avoid these</div><div class="crit-item"><div class="cdot dr"></div>Meme, entertainment, or comedy pages</div><div class="crit-item"><div class="cdot dr"></div>Heavily commercial influencer accounts</div><div class="crit-item"><div class="cdot dr"></div>Overly edited or model-style content</div><div class="crit-item"><div class="cdot dr"></div>Suspicious likes-to-followers ratio</div><div class="crit-item"><div class="cdot dr"></div>Already running 5+ paid brand deals</div><div class="crit-item"><div class="cdot dr"></div>Doesn't post casual everyday content</div><div class="crit-item"><div class="cdot dr"></div>Last post more than 3 weeks ago</div><div class="crit-item"><div class="cdot dr"></div>Heavy filters — won't show real fabric</div><div class="crit-item"><div class="cdot dr"></div>Private account with no public posts</div></div>
+      </div>
+      <div class="card mb20">
+        <div class="card-title">Engagement rate calculator</div>
+        <div class="eng-inputs">
+          <div class="eng-field"><label>Followers</label><input type="number" id="ef" value="3000" oninput="engCalc()"></div>
+          <div class="eng-field"><label>Avg likes / post</label><input type="number" id="el" value="180" oninput="engCalc()"></div>
+        </div>
+        <div class="eng-result"><div class="eng-pct" id="epct">6.0%</div><div><div class="eng-verdict ev-ex" id="everdict">Excellent fit</div><div class="eng-hint" id="ehint">5%+ is excellent for nano creators</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Quick scorecard</div>
+        <div class="score-wrap">
+          <div class="score-ring"><svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="33" fill="none" stroke="#E8E5DF" stroke-width="6"/><circle cx="40" cy="40" r="33" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round" stroke-dasharray="207" id="sring" stroke-dashoffset="207"/></svg><div class="score-num" id="snum">0</div></div>
+          <div class="score-rows">
+            <div class="score-row"><span class="sk">Engagement ≥ 4%</span><span class="sv" id="sc1">0/30</span></div>
+            <div class="score-row"><span class="sk">Aesthetic match</span><span class="sv" id="sc2">0/25</span></div>
+            <div class="score-row"><span class="sk">Posts regularly</span><span class="sv" id="sc3">0/20</span></div>
+            <div class="score-row"><span class="sk">Follower range OK</span><span class="sv" id="sc4">0/15</span></div>
+            <div class="score-row"><span class="sk">India-based</span><span class="sv" id="sc5">0/10</span></div>
+          </div>
+        </div>
+        <div class="score-checks">
+          <label><input type="checkbox" id="csc1" onchange="scoreCalc()"> Engagement ≥ 4%</label>
+          <label><input type="checkbox" id="csc2" onchange="scoreCalc()"> Aesthetic match</label>
+          <label><input type="checkbox" id="csc3" onchange="scoreCalc()"> Posts regularly</label>
+          <label><input type="checkbox" id="csc4" onchange="scoreCalc()"> 1k–10k followers</label>
+          <label><input type="checkbox" id="csc5" onchange="scoreCalc()"> India-based</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="panel" id="panel-content">
+      <div class="sh"><h2>Content strategy</h2><p>Formats, repurposing system, hooks, and library structure.</p></div>
+      <div class="two-col mb12">
+        <div class="fgrid" style="margin-bottom:0">
+          <div class="fcard"><div class="ftype" style="color:var(--blue)">Styling</div><div class="fi"><div class="fdot"></div>3 ways to style this tee</div><div class="fi"><div class="fdot"></div>Outfit build reel</div><div class="fi"><div class="fdot"></div>Minimal fit inspiration</div><div class="fi"><div class="fdot"></div>What I wore this week</div></div>
+          <div class="fcard"><div class="ftype" style="color:var(--green)">Lifestyle</div><div class="fi"><div class="fdot"></div>Day in my life wearing it</div><div class="fi"><div class="fdot"></div>Coffee run outfit</div><div class="fi"><div class="fdot"></div>Campus / work fit</div><div class="fi"><div class="fdot"></div>Morning routine reel</div></div>
+          <div class="fcard"><div class="ftype" style="color:var(--amber)">Social proof</div><div class="fi"><div class="fdot"></div>Honest first impression</div><div class="fi"><div class="fdot"></div>Unboxing + quality check</div><div class="fi"><div class="fdot"></div>Trying for the first time</div><div class="fi"><div class="fdot"></div>Is this worth it?</div></div>
+          <div class="fcard"><div class="ftype" style="color:var(--mid)">Visual</div><div class="fi"><div class="fdot"></div>Mirror fit check</div><div class="fi"><div class="fdot"></div>Walking shot reel</div><div class="fi"><div class="fdot"></div>Street outfit clip</div><div class="fi"><div class="fdot"></div>Fit vs expectation</div></div>
+        </div>
+        <div>
+          <div class="card mb12"><div class="card-title">1 video → 5 content pieces</div><div class="rstep"><div class="rnum">1</div><div class="rtxt"><strong>Brand reel</strong>Post as-is, add brand music</div></div><div class="rstep"><div class="rnum">2</div><div class="rtxt"><strong>Hook edit</strong>Trim to 3 sec + text overlay</div></div><div class="rstep"><div class="rnum">3</div><div class="rtxt"><strong>Founder overlay</strong>You talking over their footage</div></div><div class="rstep"><div class="rnum">4</div><div class="rtxt"><strong>Story repost</strong>15-sec clip, tag the creator</div></div><div class="rstep"><div class="rnum">5</div><div class="rtxt"><strong>Testimonial clip</strong>Most authentic 5 seconds</div></div></div>
+        </div>
+      </div>
+      <div class="card mb12"><div class="card-title">Hook formulas</div><div class="hook"><div class="fdot"></div><em>"This tee costs ₹X and here's why it's different"</em></div><div class="hook"><div class="fdot"></div><em>"The basics brand India actually needed"</em></div><div class="hook"><div class="fdot"></div><em>"I've worn this every day for 2 weeks — honest review"</em></div><div class="hook"><div class="fdot"></div><em>"Why I stopped buying from fast fashion brands"</em></div><div class="hook"><div class="fdot"></div><em>"Honest review after 10 wears — no script"</em></div><div class="hook"><div class="fdot"></div><em>"3 minimalist outfits, 1 tee"</em></div><div class="hook"><div class="fdot"></div><em>"What a ₹X everyday tee actually feels like"</em></div></div>
+      <div class="card"><div class="card-title">Content library folders</div><div class="folders"><div class="folder">📁 UGC / Styling</div><div class="folder">📁 UGC / Lifestyle</div><div class="folder">📁 UGC / Testimonials</div><div class="folder">📁 UGC / Reviews</div><div class="folder">📁 UGC / Walking shots</div><div class="folder">📁 UGC / Hook edits</div><div class="folder">📁 UGC / Founder overlays</div><div class="folder">📁 UGC / Story reposts</div><div class="folder">📁 Ads / Paid creatives</div></div></div>
+    </div>
+
+    <!-- PLAYBOOK -->
+    <div class="panel" id="panel-playbook">
+      <div class="sh"><h2>Execution playbook</h2><p>The complete checklist for every creator relationship.</p></div>
+      <div class="two-col">
+        <div>
+          <div class="card"><div class="card-title">Single creator — full checklist</div>
+            <div class="ci" onclick="tc(this)"><div class="ci-box"><svg class="ci-tick" width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,1.5" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ci-lbl">Found creator — profile checked against all criteria</div><span class="ci-tag">Mon</span></div>
+            <div class="ci" onclick="tc(this)"><div class="ci-box"><svg class="ci-tick" width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,1.5" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ci-lbl">Engagement rate checked — above 3%</div><span class="ci-tag">Mon</span></div>
+            <div class="ci" onclick="tc(this)"><div class="ci-box"><svg class="ci-tick" width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,1.5" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ci-lbl">Logged in tracker with handle, followers, content type</div><span class="ci-tag">Mon</span></div>
+            <div class="ci" onclick="tc(this)"><div class="ci-box"><svg class="ci-tick" width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,1.5" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ci-lbl">Initial DM sent (Template A) — first line is personalised</div><span class="ci-tag">Tue</span></div>
+            <div class="ci" onclick="tc(this)"><div class="ci-box"><svg class="ci-tick" width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,1.5" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ci-lbl">Follow-up sent if no reply in 5 days (Template B)</div><span class="ci-tag">Wed</span></div>
+            <div class="ci" onclick="tc(this)"><div class="ci-box"><svg class="ci-tick" width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,1.5" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ci-lbl">Creator replied — content brief sent (Template C)</div><span class="ci-tag">Thu</span></div>
+            <div class="ci" onclick="tc(this)"><div class="ci-box"><svg class="ci-tick" width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,1.5" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ci-lbl">Size, colour, and delivery address confirmed</div><span class="ci-tag">Thu</span></div>
+            <div class="ci" onclick="tc(this)"><div class="ci-box"><svg class="ci-tick" width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,1.5" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ci-lbl">Usage rights confirmed in conversation</div><span class="ci-tag">Thu</span></div>
+            <div class="ci" onclick="tc(this)"><div class="ci-box"><svg class="ci-tick" width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,1.5" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ci-lbl">Product shipped — tracking shared with creator</div><span class="ci-tag">Fri</span></div>
+            <div class="ci" onclick="tc(this)"><div class="ci-box"><svg class="ci-tick" width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,1.5" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ci-lbl">Nudge sent 10 days after delivery (Template D)</div><span class="ci-tag">+10d</span></div>
+            <div class="ci" onclick="tc(this)"><div class="ci-box"><svg class="ci-tick" width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,1.5" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ci-lbl">Content received and saved to library folder</div><span class="ci-tag">+2wk</span></div>
+            <div class="ci" onclick="tc(this)"><div class="ci-box"><svg class="ci-tick" width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,1.5" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ci-lbl">Repurposed into 5 formats</div><span class="ci-tag">+2wk</span></div>
+            <div class="ci" onclick="tc(this)"><div class="ci-box"><svg class="ci-tick" width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,1.5" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ci-lbl">Creator's reel reposted to story — tagged them</div><span class="ci-tag">+2wk</span></div>
+            <div class="ci" onclick="tc(this)"><div class="ci-box"><svg class="ci-tick" width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,1.5" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ci-lbl">Marked done in tracker — relationship note added</div><span class="ci-tag">Done</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="card"><div class="card-title">Weekly rhythm</div>
+            <div class="wgrid" style="grid-template-columns:1fr;gap:8px">
+              <div class="dcard"><div class="dcard-day">Monday</div><div class="dcard-action">Discovery</div><div class="dcard-desc">20 creators. Hashtags, explore, competitor followers.</div><span class="pill pill-black">20 profiles</span></div>
+              <div class="dcard"><div class="dcard-day">Tuesday</div><div class="dcard-action">Outreach</div><div class="dcard-desc">20 DMs. Personal first line every time. No copy-paste.</div><span class="pill pill-stone">20 DMs</span></div>
+              <div class="dcard"><div class="dcard-day">Wednesday</div><div class="dcard-action">Follow-ups</div><div class="dcard-desc">Nudge last week's batch. Handle all incoming replies.</div><span class="pill pill-stone">Replies</span></div>
+              <div class="dcard"><div class="dcard-day">Thursday</div><div class="dcard-action">Confirm & brief</div><div class="dcard-desc">Lock in 5–8. Send brief. Collect size + address.</div><span class="pill pill-accent">5–8 locked</span></div>
+              <div class="dcard"><div class="dcard-day">Friday</div><div class="dcard-action">Ship + repurpose</div><div class="dcard-desc">Ship orders. Edit content. Schedule one reel.</div><span class="pill pill-black">Ship + post</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI -->
+    <div class="panel" id="panel-ai">
+      <div class="sh"><h2>AI assistant</h2><p>Generate DMs, briefs, and hooks — powered by Claude.</p></div>
+      <div class="ai-card mb12">
+        <div class="ai-title">Personalised DM writer</div>
+        <div class="ai-sub">Enter creator details and get a ready-to-send, personalised outreach DM.</div>
+        <div class="ai-row"><input type="text" class="ai-in" id="ai-handle" placeholder="Creator handle e.g. @viraj.styles"><input type="number" class="ai-in" id="ai-followers" placeholder="Followers e.g. 4200" style="max-width:180px"></div>
+        <textarea class="ai-ta" id="ai-note" placeholder="Describe a specific post or reel you liked — e.g. 'posted a neutral-toned airport fit reel last week, very clean and minimal'"></textarea>
+        <button class="ai-btn" id="btn-dm" onclick="genDM()">Generate DM</button>
+        <div class="ai-out" id="out-dm"></div>
+      </div>
+      <div class="ai-card mb12">
+        <div class="ai-title">Content brief generator</div>
+        <div class="ai-sub">Input the creator's style and get a tailored brief to send them after they say yes.</div>
+        <div class="ai-row"><input type="text" class="ai-in" id="ai-style" placeholder="Creator's aesthetic e.g. 'clean streetwear, muted tones, city life'"><input type="text" class="ai-in" id="ai-product" placeholder="Product e.g. 'The Cloud Crew — white oversized tee'" style="max-width:280px"></div>
+        <button class="ai-btn" id="btn-brief" onclick="genBrief()">Generate brief</button>
+        <div class="ai-out" id="out-brief"></div>
+      </div>
+      <div class="ai-card">
+        <div class="ai-title">Reel hook + caption writer</div>
+        <div class="ai-sub">Describe a clip you received and get 3 scroll-stopping hooks and a caption.</div>
+        <textarea class="ai-ta" id="ai-clip" placeholder="Describe the clip — e.g. 'creator in white tee at a café, natural light, styled with beige pants, gave honest opinion on camera'"></textarea>
+        <button class="ai-btn" id="btn-hook" onclick="genHooks()">Generate hooks + caption</button>
+        <div class="ai-out" id="out-hook"></div>
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="panel" id="panel-notes">
+      <div class="sh"><h2>Notes</h2><p>Saved to Google Sheets automatically when you click save.</p></div>
+      <div class="card">
+        <div class="card-title">Campaign notes</div>
+        <textarea class="notes-area" id="notes-area" placeholder="Use this for anything — weekly learnings, creator observations, strategy updates, things to remember..."></textarea>
+        <button class="save-btn" id="notes-save-btn" onclick="saveNotes()">Save notes</button>
+      </div>
+    </div>
+
+    <!-- SETUP / SETTINGS -->
+    <div class="panel" id="panel-setup">
+      <div class="sh"><h2>Settings</h2><p>Connect Google Sheets, set up AI tools, and deploy your dashboard.</p></div>
+
+      <!-- GOOGLE SHEETS -->
+      <div class="card mb20" style="border:2px solid var(--black)">
+        <div class="card-title">Step 1 — Connect Google Sheets (your database)</div>
+        <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:18px">
+          <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:24px;height:24px;border-radius:50%;background:var(--black);color:var(--white);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">1</div><div><div style="font-size:13px;font-weight:500;margin-bottom:2px">Create a new Google Sheet</div><div style="font-size:12px;color:var(--muted)">Go to sheets.google.com → New blank spreadsheet → name it "TrueTee UGC Dashboard"</div></div></div>
+          <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:24px;height:24px;border-radius:50%;background:var(--black);color:var(--white);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">2</div><div><div style="font-size:13px;font-weight:500;margin-bottom:2px">Open Apps Script</div><div style="font-size:12px;color:var(--muted)">Extensions → Apps Script → delete all existing code → paste the entire contents of truetee-apps-script.js → Save</div></div></div>
+          <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:24px;height:24px;border-radius:50%;background:var(--black);color:var(--white);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">3</div><div><div style="font-size:13px;font-weight:500;margin-bottom:2px">Deploy as Web App</div><div style="font-size:12px;color:var(--muted)">Deploy → <strong>New deployment</strong> → Web App → Execute as: <strong>Me</strong> → Who has access: <strong>Anyone</strong> → Deploy → Authorise → copy the URL ending in /exec</div></div></div>
+          <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:24px;height:24px;border-radius:50%;background:var(--black);color:var(--white);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">4</div><div><div style="font-size:13px;font-weight:500;margin-bottom:2px">Paste URL below and connect</div><div style="font-size:12px;color:var(--muted)">Every time you update the script code, you must create a <strong>new deployment</strong> — not edit the old one. The URL will change.</div></div></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input type="text" class="ti" id="url-input" placeholder="https://script.google.com/macros/s/YOUR_ID/exec" style="flex:1;font-size:13px">
+          <button class="t-add" onclick="saveUrl()">Save & connect</button>
+        </div>
+        <div style="font-size:11px;color:var(--muted)" id="url-status">Not connected</div>
+        <div class="divider"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button onclick="testConnection()" style="font-size:12px;padding:7px 14px;border:1px solid var(--stone);border-radius:var(--r);background:var(--white);cursor:pointer;font-family:var(--sans);color:var(--mid)">Test connection</button>
+          <button onclick="loadFromSheets()" style="font-size:12px;padding:7px 14px;border:1px solid var(--stone);border-radius:var(--r);background:var(--white);cursor:pointer;font-family:var(--sans);color:var(--mid)">Reload from Sheets</button>
+          <button onclick="clearAll()" style="font-size:12px;padding:7px 14px;border:1px solid var(--red-light);border-radius:var(--r);background:var(--white);cursor:pointer;font-family:var(--sans);color:var(--red)">Clear local data</button>
+        </div>
+      </div>
+
+      <!-- AI SETUP -->
+      <div class="card mb20">
+        <div class="card-title">Step 2 — Set up AI tools (requires hosting)</div>
+        <div style="background:var(--amber-light);border:1px solid #D4B870;border-radius:var(--r);padding:10px 14px;margin-bottom:16px">
+          <div style="font-size:11px;font-weight:500;color:var(--amber);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Why AI tools need hosting</div>
+          <div style="font-size:12px;color:var(--amber);line-height:1.6">When you open the dashboard as a local file, your browser blocks calls to external APIs (Anthropic) for security. Once you host it on GitHub Pages (free), all AI features work instantly.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+          <div style="font-size:13px;font-weight:500">Your Anthropic API key</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Get your key from <a href="https://console.anthropic.com" style="color:var(--black)">console.anthropic.com</a> → API Keys → Create key. It starts with "sk-ant-". Stored only in your browser, never sent anywhere except Anthropic.</div>
+          <div style="display:flex;gap:8px">
+            <input type="password" class="ti" id="api-key-input" placeholder="sk-ant-api03-..." style="flex:1;font-size:13px;font-family:monospace">
+            <button class="t-add" onclick="saveApiKey()">Save key</button>
+          </div>
+          <div style="font-size:11px" id="api-key-status"></div>
+        </div>
+        <div class="divider"></div>
+        <div style="font-size:12px;color:var(--muted)">AI tools use <strong>Claude Haiku</strong> — the fastest and most affordable model. Cost is roughly ₹0.05–0.10 per generation. For 100 DMs/week that is about ₹20/month.</div>
+      </div>
+
+      <!-- DEPLOY GUIDE -->
+      <div class="card">
+        <div class="card-title">Step 3 — Deploy to GitHub Pages (free, 3 minutes)</div>
+        <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:18px">
+          <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:24px;height:24px;border-radius:50%;background:var(--black);color:var(--white);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">1</div><div><div style="font-size:13px;font-weight:500;margin-bottom:2px">Create a GitHub account</div><div style="font-size:12px;color:var(--muted)">Go to <a href="https://github.com" style="color:var(--black)">github.com</a> → Sign up (free). Pick any username.</div></div></div>
+          <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:24px;height:24px;border-radius:50%;background:var(--black);color:var(--white);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">2</div><div><div style="font-size:13px;font-weight:500;margin-bottom:2px">Create a new repository</div><div style="font-size:12px;color:var(--muted)">Click + → New repository → name it <strong>truetee-dashboard</strong> → set to Public → tick "Add a README file" → Create repository</div></div></div>
+          <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:24px;height:24px;border-radius:50%;background:var(--black);color:var(--white);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">3</div><div><div style="font-size:13px;font-weight:500;margin-bottom:2px">Upload the dashboard file</div><div style="font-size:12px;color:var(--muted)">In the repository, click <strong>Add file → Upload files</strong> → drag in <strong>truetee-ugc-dashboard.html</strong> → rename it to <strong>index.html</strong> before uploading → Commit changes</div></div></div>
+          <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:24px;height:24px;border-radius:50%;background:var(--black);color:var(--white);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">4</div><div><div style="font-size:13px;font-weight:500;margin-bottom:2px">Enable GitHub Pages</div><div style="font-size:12px;color:var(--muted)">Settings → Pages → Source: <strong>Deploy from a branch</strong> → Branch: <strong>main</strong> → folder: <strong>/ (root)</strong> → Save. Wait 60 seconds.</div></div></div>
+          <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:24px;height:24px;border-radius:50%;background:var(--black);color:var(--white);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">5</div><div><div style="font-size:13px;font-weight:500;margin-bottom:2px">Your dashboard is live</div><div style="font-size:12px;color:var(--muted)">Your URL will be <strong>https://yourusername.github.io/truetee-dashboard</strong>. Open it, paste your Sheets URL and API key in Settings — done. Bookmark it.</div></div></div>
+        </div>
+        <div style="background:var(--green-light);border:1px solid #9FD4A8;border-radius:var(--r);padding:10px 14px">
+          <div style="font-size:12px;color:var(--green);line-height:1.6"><strong>After hosting:</strong> Enter your Anthropic API key in the AI Setup section above. All three AI tools (DM writer, brief generator, hook writer) will work immediately. The Sheets sync continues working exactly as before.</div>
+        </div>
+      </div>
+    </div>
+
+<script>
+// ── GLOBALS ──
+let creators = [];
+let activeFilter = 'all';
+let SCRIPT_URL = localStorage.getItem('tt_script_url') || '';
+const SL = {new:'s-new',dm:'s-dm',yes:'s-yes',ship:'s-ship',done:'s-done'};
+const SN = {new:'New',dm:'DM sent',yes:'Confirmed',ship:'Shipped',done:'Content received'};
+const titles = {overview:'Overview',digest:'This week',tracker:'Creator tracker',outreach:'DM templates',criteria:'Creator criteria',content:'Content strategy',playbook:'Execution playbook',ai:'AI assistant',notes:'Notes',setup:'Settings'};
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  if (SCRIPT_URL) {
+    document.getElementById('setup-banner').classList.add('hidden');
+    document.getElementById('url-input').value = SCRIPT_URL;
+    setSyncStatus('loading','Connecting...');
+    loadFromSheets();
+  }
+  loadLocalData();
+  engCalc(); scoreCalc(); calc();
+});
+
+// ── LOCAL STORAGE ──
+function saveLocal() {
+  localStorage.setItem('tt_creators', JSON.stringify(creators));
+}
+function saveApiKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  const status = document.getElementById('api-key-status');
+  if (!key.startsWith('sk-ant-')) {
+    status.textContent = 'Invalid key format — must start with sk-ant-';
+    status.style.color = 'var(--red)';
+    return;
+  }
+  localStorage.setItem('tt_anthropic_key', key);
+  status.textContent = 'Key saved ✓ — AI tools ready once hosted';
+  status.style.color = 'var(--green)';
+}
+
+function loadLocalData() {
+  const saved = localStorage.getItem('tt_creators');
+  if (saved) { creators = JSON.parse(saved); renderTracker(); updateCounts(); calc(); }
+  const notes = localStorage.getItem('tt_notes');
+  const apiKey = localStorage.getItem('tt_anthropic_key');
+  if (apiKey) {
+    const inp = document.getElementById('api-key-input');
+    if (inp) inp.value = apiKey;
+    const st = document.getElementById('api-key-status');
+    if (st) { st.textContent = 'Key saved ✓'; st.style.color = 'var(--green)'; }
+  }
+  if (notes) document.getElementById('notes-area').value = notes;
+  const url = localStorage.getItem('tt_script_url');
+  if (url) document.getElementById('url-input').value = url;
+}
+
+// ── SHEETS API ──
+async function sheetsCall(data) {
+  if (!SCRIPT_URL) return null;
+  try {
+    // Google Apps Script requires requests to follow redirects
+    // and doesn't support CORS preflight — use no-cors GET for reads,
+    // POST with redirect:follow for writes
+    const url = new URL(SCRIPT_URL);
+    url.searchParams.set('action', data.action);
+    
+    const isRead = data.action === 'getCreators' || data.action === 'getMetrics' || data.action === 'ping';
+    
+    let res;
+    if (isRead) {
+      res = await fetch(url.toString(), { redirect: 'follow' });
+    } else {
+      res = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(data)
+      });
+    }
+    const json = await res.json();
+    return json.ok ? json.data : null;
+  } catch(e) {
+    console.error('Sheets error:', e);
+    return null;
+  }
+}
+
+async function loadFromSheets() {
+  if (!SCRIPT_URL) return;
+  setSyncStatus('loading','Loading...');
+  const data = await sheetsCall({action:'getCreators'});
+  if (data !== null) {
+    creators = data;
+    saveLocal();
+    renderTracker(); updateCounts(); calc();
+    setSyncStatus('ok','Synced with Sheets');
+    const metrics = await sheetsCall({action:'getMetrics'});
+    if (metrics) {
+      if (metrics.contacted) { document.getElementById('sl1').value = metrics.contacted; document.getElementById('sv1').textContent = metrics.contacted; }
+      if (metrics.confirmed) { document.getElementById('sl2').value = metrics.confirmed; document.getElementById('sv2').textContent = metrics.confirmed; }
+      if (metrics.clips) { document.getElementById('sl3').value = metrics.clips; document.getElementById('sv3').textContent = metrics.clips; }
+      if (metrics.notes) document.getElementById('notes-area').value = metrics.notes;
+      calc();
+    }
+  } else {
+    setSyncStatus('error','Connection failed');
+  }
+}
+
+function setSyncStatus(state, text) {
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-text');
+  const ind = document.getElementById('sync-ind');
+  txt.textContent = text;
+  const colors = {ok:'#2D5A3D',loading:'#C8B89A',error:'#8B2020',none:'#ddd'};
+  const classes = {ok:'sync-ok',loading:'sync-pending',error:'sync-error',none:'sync-none'};
+  dot.style.background = colors[state];
+  ind.className = 'sync-dot ' + classes[state];
+}
+
+// ── URL SETUP ──
+function saveUrl() {
+  const url = document.getElementById('url-input').value.trim();
+  if (!url.startsWith('https://script.google.com')) {
+    document.getElementById('url-status').textContent = 'Invalid URL — must start with https://script.google.com';
+    document.getElementById('url-status').style.color = 'var(--red)';
+    return;
+  }
+  SCRIPT_URL = url;
+  localStorage.setItem('tt_script_url', url);
+  document.getElementById('url-status').textContent = 'URL saved — testing connection...';
+  document.getElementById('url-status').style.color = 'var(--muted)';
+  document.getElementById('setup-banner').classList.add('hidden');
+  testConnection();
+}
+function saveUrlFromBanner() {
+  document.getElementById('url-input').value = document.getElementById('banner-url-input').value;
+  saveUrl();
+}
+function dismissBanner() { document.getElementById('setup-banner').classList.add('hidden'); }
+
+async function testConnection() {
+  if (!SCRIPT_URL) { alert('No URL saved. Paste your Web App URL first.'); return; }
+  setSyncStatus('loading','Testing...');
+  const data = await sheetsCall({action:'getCreators'});
+  if (data !== null) {
+    setSyncStatus('ok','Connected ✓');
+    document.getElementById('url-status').textContent = 'Connected successfully — Sheets is syncing your data.';
+    document.getElementById('url-status').style.color = 'var(--green)';
+    loadFromSheets();
+  } else {
+    setSyncStatus('error','Failed');
+    document.getElementById('url-status').textContent = 'Connection failed. Check your URL and make sure the script is deployed with "Anyone" access.';
+    document.getElementById('url-status').style.color = 'var(--red)';
+  }
+}
+
+// ── NAV ──
+function show(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  document.getElementById('topbar-title').textContent = titles[id] || id;
+}
+function qn(sel) { return document.querySelector(sel); }
+
+// ── METRICS ──
+function calc() {
+  const c = parseInt(document.getElementById('sl1').value);
+  const col = parseInt(document.getElementById('sl2').value);
+  const cl = parseInt(document.getElementById('sl3').value);
+  const rep = cl * 5;
+  const replied = Math.round(c * 0.3);
+  const posted = Math.round(cl * 0.85);
+  ['sv1','mv1','fn1'].forEach(id => document.getElementById(id).textContent = c);
+  ['sv2','mv2','fn3'].forEach(id => document.getElementById(id).textContent = col);
+  ['sv3','mv3'].forEach(id => document.getElementById(id).textContent = cl);
+  document.getElementById('mv4').textContent = rep;
+  document.getElementById('fn2').textContent = replied;
+  document.getElementById('fn4').textContent = posted;
+  document.getElementById('pf1').style.width = Math.min(100, Math.round(cl/60*100)) + '%';
+  document.getElementById('pf2').style.width = Math.min(100, Math.round(col/40*100)) + '%';
+  document.getElementById('pf3').style.width = Math.min(100, Math.round(rep/300*100)) + '%';
+  document.getElementById('pp1').textContent = cl + ' / 60';
+  document.getElementById('pp2').textContent = col + ' / 40';
+  document.getElementById('pp3').textContent = rep + ' / 300';
+  const wk = Math.max(1, Math.min(12, Math.ceil(c/20)||1));
+  document.getElementById('sb-week').textContent = 'Week ' + wk + ' of 12';
+  document.getElementById('sb-sub').textContent = creators.length + ' creator' + (creators.length !== 1 ? 's' : '') + ' in pipeline';
+}
+
+async function saveMetricsToSheets() {
+  const btn = document.getElementById('save-metrics-btn');
+  btn.textContent = 'Saving...'; btn.disabled = true;
+  const metrics = {
+    contacted: document.getElementById('sl1').value,
+    confirmed: document.getElementById('sl2').value,
+    clips: document.getElementById('sl3').value
+  };
+  if (SCRIPT_URL) {
+    const res = await sheetsCall({action:'saveMetrics', metrics});
+    btn.textContent = res ? 'Saved ✓' : 'Error saving'; btn.className = res ? 'save-btn saved' : 'save-btn';
+  } else {
+    btn.textContent = 'Connect Sheets first';
+  }
+  setTimeout(() => { btn.textContent = 'Save metrics to Sheets'; btn.className = 'save-btn'; btn.disabled = false; }, 2500);
+}
+
+// ── ENG CALC ──
+function engCalc() {
+  const f = parseInt(document.getElementById('ef').value) || 1;
+  const l = parseInt(document.getElementById('el').value) || 0;
+  const r = (l / f * 100).toFixed(1);
+  document.getElementById('epct').textContent = r + '%';
+  const rv = parseFloat(r);
+  const ev = document.getElementById('everdict');
+  const eh = document.getElementById('ehint');
+  if (rv >= 5) { ev.textContent = 'Excellent fit'; ev.className = 'eng-verdict ev-ex'; eh.textContent = '5%+ is excellent — reach out immediately'; }
+  else if (rv >= 3) { ev.textContent = 'Good fit'; ev.className = 'eng-verdict ev-gd'; eh.textContent = '3–5% is healthy engagement — good candidate'; }
+  else if (rv >= 2) { ev.textContent = 'Borderline'; ev.className = 'eng-verdict ev-bd'; eh.textContent = '2–3% — possible inflated followers, check comments'; }
+  else { ev.textContent = 'Skip'; ev.className = 'eng-verdict ev-sk'; eh.textContent = 'Below 2% — move on'; }
+}
+
+// ── SCORECARD ──
+function scoreCalc() {
+  const pts = [30,25,20,15,10];
+  let total = 0;
+  [1,2,3,4,5].forEach(i => {
+    const on = document.getElementById('csc'+i).checked;
+    const p = on ? pts[i-1] : 0; total += p;
+    document.getElementById('sc'+i).textContent = p + '/' + pts[i-1];
+  });
+  document.getElementById('snum').textContent = total;
+  const circ = 2 * Math.PI * 33;
+  document.getElementById('sring').setAttribute('stroke-dashoffset', circ - (total/100*circ));
+}
+
+// ── CHECKLIST ──
+function tc(el) {
+  const box = el.querySelector('.ci-box'); const lbl = el.querySelector('.ci-lbl');
+  box.classList.toggle('done'); lbl.classList.toggle('done');
+}
+
+// ── COPY ──
+function copyT(btn, id) {
+  navigator.clipboard.writeText(document.getElementById(id).textContent.trim()).then(() => {
+    btn.textContent = 'Copied ✓'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── TRACKER ──
+async function addCreator() {
+  const handle = document.getElementById('t-handle').value.trim();
+  if (!handle) return;
+  const btn = document.getElementById('add-btn');
+  btn.disabled = true; btn.textContent = 'Adding...';
+  const creator = {
+    handle, followers: document.getElementById('t-followers').value || '',
+    type: document.getElementById('t-type').value || '',
+    location: document.getElementById('t-location').value || '',
+    status: document.getElementById('t-status').value
+  };
+  if (SCRIPT_URL) {
+    setSyncStatus('loading','Saving...');
+    const res = await sheetsCall({action:'addCreator', creator});
+    if (res) { creator.id = res.id; setSyncStatus('ok','Saved to Sheets'); }
+    else { creator.id = 'local_' + Date.now(); setSyncStatus('error','Saved locally only'); }
+  } else {
+    creator.id = 'local_' + Date.now();
+  }
+  creators.push(creator);
+  saveLocal();
+  ['t-handle','t-followers','t-type','t-location'].forEach(id => document.getElementById(id).value = '');
+  renderTracker(); updateCounts(); calc();
+  btn.disabled = false; btn.textContent = '+ Add creator';
+}
+
+async function updateStatus(idx, val) {
+  creators[idx].status = val;
+  saveLocal(); renderTracker(); updateCounts();
+  if (SCRIPT_URL && creators[idx].id) {
+    setSyncStatus('loading','Saving...');
+    const res = await sheetsCall({action:'updateStatus', id: creators[idx].id, status: val});
+    setSyncStatus(res ? 'ok' : 'error', res ? 'Synced' : 'Sync failed');
+  }
+}
+
+async function delCreator(idx) {
+  const c = creators[idx];
+  if (SCRIPT_URL && c.id) {
+    setSyncStatus('loading','Deleting...');
+    const res = await sheetsCall({action:'deleteCreator', id: c.id});
+    setSyncStatus(res ? 'ok' : 'error', res ? 'Deleted' : 'Error');
+  }
+  creators.splice(idx, 1);
+  saveLocal(); renderTracker(); updateCounts(); calc();
+}
+
+function renderTracker() {
+  const tbody = document.getElementById('tbody');
+  const list = activeFilter === 'all' ? creators : creators.filter(c => c.status === activeFilter);
+  if (!list.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="7">${activeFilter==='all'?'No creators yet — add one above':'No creators with this status'}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(c => {
+    const ri = creators.findIndex(x => x.id === c.id);
+    const f = c.followers ? Number(c.followers).toLocaleString('en-IN') : '—';
+    return `<tr>
+      <td style="font-weight:500">${c.handle}</td>
+      <td>${f}</td>
+      <td style="color:var(--mid)">${c.type||'—'}</td>
+      <td style="color:var(--mid)">${c.location||'—'}</td>
+      <td><span class="sb ${SL[c.status]}">${SN[c.status]}</span></td>
+      <td><select class="ss" onchange="updateStatus(${ri},this.value)">${Object.entries(SN).map(([k,v])=>`<option value="${k}"${k===c.status?' selected':''}>${v}</option>`).join('')}</select></td>
+      <td><button class="del-btn" onclick="delCreator(${ri})">Remove</button></td>
+    </tr>`;
+  }).join('');
+  const stats = document.getElementById('tstats');
+  stats.innerHTML = `<span class="tstat"><strong>${creators.length}</strong> total</span>` +
+    Object.entries(SN).map(([k,v]) => { const n = creators.filter(c=>c.status===k).length; return n ? `<span class="tstat"><strong>${n}</strong> ${v.toLowerCase()}</span>` : ''; }).join('');
+}
+
+function filterBy(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTracker();
+}
+
+function updateCounts() {
+  document.getElementById('fc-all').textContent = creators.length;
+  ['new','dm','yes','ship','done'].forEach(s => { document.getElementById('fc-'+s).textContent = creators.filter(c=>c.status===s).length; });
+}
+
+// ── NOTES ──
+async function saveNotes() {
+  const text = document.getElementById('notes-area').value;
+  localStorage.setItem('tt_notes', text);
+  const btn = document.getElementById('notes-save-btn');
+  if (SCRIPT_URL) {
+    btn.textContent = 'Saving...'; btn.disabled = true;
+    const res = await sheetsCall({action:'saveMetrics', metrics:{notes:text}});
+    btn.textContent = res ? 'Saved ✓' : 'Error'; btn.className = res ? 'save-btn saved' : 'save-btn';
+  } else {
+    btn.textContent = 'Saved locally ✓'; btn.className = 'save-btn saved';
+  }
+  setTimeout(() => { btn.textContent = 'Save notes'; btn.className = 'save-btn'; btn.disabled = false; }, 2000);
+}
+
+// ── CLEAR ──
+function clearAll() {
+  if (!confirm('Clear all local data? This does not affect your Google Sheet.')) return;
+  localStorage.removeItem('tt_creators'); localStorage.removeItem('tt_notes');
+  creators = []; renderTracker(); updateCounts(); calc();
+  document.getElementById('notes-area').value = '';
+}
+
+// ── AI ──
+async function callClaude(prompt) {
+  // When running locally (file://), the Anthropic API can't be called directly due to browser security.
+  // This works correctly when hosted on GitHub Pages / Netlify / any web server.
+  // The API key is stored in Settings and never leaves your browser.
+  const apiKey = localStorage.getItem('tt_anthropic_key');
+  if (!apiKey) {
+    throw new Error('NO_KEY');
+  }
+  const isLocal = window.location.protocol === 'file:';
+  if (isLocal) {
+    throw new Error('LOCAL_FILE');
+  }
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error?.message || 'API error ' + res.status);
+  }
+  const data = await res.json();
+  return data.content?.map(b => b.text || '').join('') || 'No response generated.';
+}
+
+function handleAIError(e, outEl) {
+  if (e.message === 'NO_KEY') {
+    outEl.innerHTML = '<span style="color:#C8B89A">⚠ No API key saved. Go to <strong>Settings → AI Setup</strong> and paste your Anthropic API key.</span>';
+  } else if (e.message === 'LOCAL_FILE') {
+    outEl.innerHTML = '<span style="color:#C8B89A">⚠ AI tools require the dashboard to be hosted online (not opened as a local file). Deploy to GitHub Pages (free, 3 min) then it works instantly. See <strong>Settings → Deploy guide</strong>.</span>';
+  } else {
+    outEl.innerHTML = '<span style="color:#8B2020">Error: ' + e.message + '</span>';
+  }
+}
+
+async function genDM() {
+  const out = document.getElementById('out-dm'); const btn = document.getElementById('btn-dm');
+  const handle = document.getElementById('ai-handle').value||'this creator';
+  const followers = document.getElementById('ai-followers').value||'unknown';
+  const note = document.getElementById('ai-note').value;
+  out.className='ai-out show'; out.innerHTML='<span class="ai-loading">Writing your DM...</span>'; btn.disabled=true;
+  const prompt=`Write an Instagram DM for TrueTee, an Indian everyday basics tee brand. This is from the founder to a nano creator for a barter collab (free tee for natural UGC).
+
+Creator: ${handle} | Followers: ${followers}
+Post to reference: ${note||'general everyday style content'}
+
+Rules: Under 80 words. Start with ONE very specific genuine observation about their content. Do not use "synergy", "collaboration opportunity", or "brand ambassador". End with a simple open question. First person, warm but not salesy.`;
+  try { out.textContent = await callClaude(prompt); } catch(e) { out.textContent = 'Error: '+e.message; }
+  btn.disabled=false;
+}
+
+async function genBrief() {
+  const out = document.getElementById('out-brief'); const btn = document.getElementById('btn-brief');
+  const style = document.getElementById('ai-style').value;
+  const product = document.getElementById('ai-product').value;
+  out.className='ai-out show'; out.innerHTML='<span class="ai-loading">Writing the brief...</span>'; btn.disabled=true;
+  const prompt=`Write a UGC content brief for TrueTee, an Indian everyday basics tee brand. Tone: honest, minimal, non-corporate.
+
+Creator's aesthetic: ${style||'minimal, everyday casual'}
+Product: ${product||'TrueTee essential tee'}
+
+Include: 3 content ideas tailored to their style, format guidance, a note on creative freedom, usage rights clause. Under 200 words. Warm and collaborative.`;
+  try { out.textContent = await callClaude(prompt); } catch(e) { out.textContent = 'Error: '+e.message; }
+  btn.disabled=false;
+}
+
+async function genHooks() {
+  const out = document.getElementById('out-hook'); const btn = document.getElementById('btn-hook');
+  const desc = document.getElementById('ai-clip').value;
+  out.className='ai-out show'; out.innerHTML='<span class="ai-loading">Writing hooks...</span>'; btn.disabled=true;
+  const prompt=`Write Instagram Reel hooks and a caption for TrueTee, an Indian everyday basics tee brand.
+
+Clip: ${desc||'creator wearing TrueTee in everyday setting'}
+
+Provide:
+- 3 opening hooks (under 8 words each, scroll-stopping, native to Reels)
+- 1 caption (60–80 words, honest founder tone, no hashtag spam, soft CTA)
+
+Hooks must feel real, not like ads. Caption like the founder wrote it.`;
+  try { out.textContent = await callClaude(prompt); } catch(e) { out.textContent = 'Error: '+e.message; }
+  btn.disabled=false;
+}
+</script>
+</body>
+</html>
